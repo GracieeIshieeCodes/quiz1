@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Finals Quiz</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e3f2fd, #fce4ec);
+      padding: 2rem;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .quiz-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .correct {
+      color: #28a745;
+      font-weight: bold;
+    }
+    .wrong {
+      color: #dc3545;
+      font-weight: bold;
+    }
+    .form-check-input:checked {
+      background-color: #0d6efd;
+      border-color: #0d6efd;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+    .btn-primary {
+      width: 100%;
+    }
+    .list-group-item {
+      transition: background-color 0.3s;
+    }
+    .list-group-item:hover {
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fas fa-clipboard-question me-2"></i>Finals Quiz</h2>
+    <div class="quiz-card">
+      <form id="quizForm">
+        <div id="quizContainer"></div>
+        <button type="submit" class="btn btn-primary mt-4">Submit Answers</button>
+      </form>
+    </div>
+    <div id="result" class="quiz-card d-none"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "It is a way of tracking how well the testing process aligns with the planned schedule and milestones",
+        options: ["Planned Progression coverage", "Planned Regression coverage", "Planned Post-release coverage"],
+        answer: 0
+      },
+      {
+        question: "A defect summary is a concise, high-level overview of the defects or issues identified during software testing",
+        options: ["Defect Status", "Defect Report", "Defect Summary"],
+        answer: 2
+      },
+      {
+        question: "Refers to the ability of a software testing process or team to assess the quality and reliability of a software application before it is officially released to users",
+        options: ["Pre-release regression", "Post-release regression capability", "Pre-release overall regression capability"],
+        answer: 2
+      },
+      {
+        question: "The main cause why a defect was occurred",
+        options: ["root cause", "post cause", "pre condition"],
+        answer: 0
+      },
+      {
+        question: "Is a document or statement that summarizes the extent to which the testing process has covered the various requirements of a software system.",
+        options: ["Requirements Test Coverage Statement", "Requirements Specification", "Business Requirements"],
+        answer: 0
+      },
+      {
+        question: "Assigning test execution involves the process of allocating and delegating testing tasks to individuals or teams responsible for carrying out the testing activities.",
+        options: ["Assigning Test Estimation", "Assigning Test Execution", "Assigning Test Automation"],
+        answer: 1
+      },
+      {
+        question: "A term used to describe an issue, problem or anomaly",
+        options: ["Bug", "Defect", "Anomaly"],
+        answer: 1
+      },
+      {
+        question: "Refers to the process of automating regression testing before a software product or update is released to end-users or customers.",
+        options: ["Prerelease overall automation", "Prerelease overall regression automation", "Prerelease overall regression coverage"],
+        answer: 1
+      },
+      {
+        question: "Refers to the deliberate and systematic selection of test cases or test scenarios that will be executed during a regression testing phase.",
+        options: ["Planned regression coverage", "Planned regression automation", "Planned overall regression coverage"],
+        answer: 0
+      },
+      {
+        question: "Provides an overview of the quality and testing activities within a software project or product.",
+        options: ["Test Status", "Status Report", "Defect Status"],
+        answer: 1
+      },
+      {
+        question: "This log is updated each time this document is updated.",
+        options: ["Defect log", "Test log", "Document change control log"],
+        answer: 2
+      },
+      {
+        question: "It's a concise way to communicate the outcome of testing activities, highlighting key metrics, the status of test cases, and any important findings.",
+        options: ["Test Result Summary Report", "Test Plan Summary Report", "Test Execution Summary Report"],
+        answer: 0
+      },
+      {
+        question: "Means the period before the software is deployed to end-users",
+        options: ["Post release", "Pre release", "Before deployment release"],
+        answer: 1
+      },
+      {
+        question: "A strategy for systematically selecting and executing automated test cases to ensure comprehensive test coverage during a regression testing phase.",
+        options: ["Planned regression coverage", "Planned regression coverage—automated", "Planned overall regression coverage"],
+        answer: 1
+      },
+      {
+        question: "An important aspect of software testing to ensure that tests are executed efficiently and at the right time.",
+        options: ["Scheduling Test Automation", "Scheduling Test Runs", "Scheduling Test Results"],
+        answer: 1
+      }
+    ];
+
+    const quizContainer = document.getElementById('quizContainer');
+    const resultContainer = document.getElementById('result');
+
+    questions.forEach((q, i) => {
+      const div = document.createElement('div');
+      div.classList.add('mb-4');
+      div.innerHTML = `<h5>${i + 1}. ${q.question}</h5>`;
+      q.options.forEach((opt, j) => {
+        div.innerHTML += `
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="q${i}" value="${j}" id="q${i}o${j}">
+            <label class="form-check-label" for="q${i}o${j}">${opt}</label>
+          </div>
+        `;
+      });
+      quizContainer.appendChild(div);
+    });
+
+    document.getElementById('quizForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      let score = 0;
+      let output = '<h4 class="mb-3"><i class="fas fa-check-circle text-success me-2"></i>Results</h4><ul class="list-group">';
+      questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const selectedVal = selected ? parseInt(selected.value) : -1;
+        const isCorrect = selectedVal === q.answer;
+        if (isCorrect) score++;
+        output += `<li class="list-group-item">
+          <strong>${i + 1}. ${q.question}</strong><br>
+          <span class="${isCorrect ? 'correct' : 'wrong'}">
+            Your answer: ${selected ? q.options[selectedVal] : 'None'}<br>
+            ${isCorrect ? 'Correct!' : `Correct answer: ${q.options[q.answer]}`}
+          </span>
+        </li>`;
+      });
+      output += `</ul><h5 class="mt-4 text-primary">Score: ${score} / ${questions.length}</h5>`;
+      resultContainer.innerHTML = output;
+      resultContainer.classList.remove('d-none');
+      window.scrollTo({ top: resultContainer.offsetTop, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
